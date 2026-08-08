@@ -9,7 +9,7 @@ notes box. Your notes persist in the page, so you can read it on your phone acro
 When you're done you hit **Save notes for Claude**, it exports a markdown file, you say "done", and
 round 2 reworks what you flagged and banks what you decided.
 
-**[See an example review →](https://jinkweon-debug.github.io/design-review-skill/examples/mise-review-round-1.html)**
+**[See an example review →](https://jinks-b.github.io/design-review-skill/examples/mise-review-round-1.html)**
 (a round-1 review for a made-up recipe app — the stance buttons and notes are live)
 
 ## The loop
@@ -27,7 +27,7 @@ you: "let's plan the next phase"
 ## Install
 
 ```bash
-git clone https://github.com/jinkweon-debug/design-review-skill.git
+git clone https://github.com/jinks-b/design-review-skill.git
 cp -r design-review-skill/skills/design-review ~/.claude/skills/
 ```
 
@@ -42,7 +42,7 @@ Project-scoped instead of global: copy it to `.claude/skills/` inside the repo y
 | --- | --- |
 | `skills/design-review/SKILL.md` | The skill. How to research the current state, structure a section, run the feedback loop, and write decisions back into the repo. |
 | `skills/design-review/assets/template.html` | The page scaffold — phone-frame CSS, the stance/notes script, the exporter, and a commented example section. |
-| `examples/mise-review-round-1.html` | The example review — [served here](https://jinkweon-debug.github.io/design-review-skill/examples/mise-review-round-1.html) by GitHub Pages. |
+| `examples/mise-review-round-1.html` | The example review — [served here](https://jinks-b.github.io/design-review-skill/examples/mise-review-round-1.html) by GitHub Pages. |
 
 ## Things worth knowing before you use it
 
