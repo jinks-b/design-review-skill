@@ -1,0 +1,561 @@
+<title>Mise · Cook mode review — round 1 (demo)</title>
+<style>
+  :root {
+    --paper: #F6F4EF; --card: #FFFFFF; --ink: #201D1A; --muted: #77726B;
+    --line: #DDD8CE; --accent: #3A5BC7; --accent-soft: #E7ECFA;
+    --ok: #2E7D4F; --ok-soft: #E3F0E8;
+    --shadow: 0 1px 3px rgba(32,29,26,.07), 0 8px 24px rgba(32,29,26,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #16151A; --card: #201F26; --ink: #ECE9E2; --muted: #98938B;
+      --line: #33313A; --accent: #8CA3F0; --accent-soft: #262C42;
+      --ok: #7FBF99; --ok-soft: #24352B;
+      --shadow: 0 1px 3px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="light"] {
+    --paper: #F6F4EF; --card: #FFFFFF; --ink: #201D1A; --muted: #77726B;
+    --line: #DDD8CE; --accent: #3A5BC7; --accent-soft: #E7ECFA;
+    --ok: #2E7D4F; --ok-soft: #E3F0E8;
+    --shadow: 0 1px 3px rgba(32,29,26,.07), 0 8px 24px rgba(32,29,26,.05);
+  }
+  :root[data-theme="dark"] {
+    --paper: #16151A; --card: #201F26; --ink: #ECE9E2; --muted: #98938B;
+    --line: #33313A; --accent: #8CA3F0; --accent-soft: #262C42;
+    --ok: #7FBF99; --ok-soft: #24352B;
+    --shadow: 0 1px 3px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         -webkit-font-smoothing: antialiased; line-height: 1.55; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px 120px; }
+  header { padding: 56px 0 8px; }
+  .eyebrow { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px;
+             letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  h1 { font-size: clamp(28px, 4.5vw, 44px); font-weight: 750; letter-spacing: -.02em;
+       line-height: 1.08; margin: 0 0 14px; text-wrap: balance; }
+  .lede { max-width: 62ch; color: var(--muted); font-size: 16.5px; margin: 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .9em;
+         background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+  .demo-banner { margin-top: 20px; padding: 12px 16px; border: 1px dashed var(--accent);
+    border-radius: 10px; background: var(--accent-soft); font-size: 14px; max-width: 72ch; }
+
+  nav.toc { position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    margin: 34px -24px 0; padding: 10px 24px; border-bottom: 1px solid var(--line);
+    display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  nav.toc::-webkit-scrollbar { display: none; }
+  nav.toc a { flex: 0 0 auto; text-decoration: none; color: var(--muted); font-size: 13px;
+    font-weight: 600; padding: 6px 13px; border: 1px solid var(--line); border-radius: 999px;
+    background: var(--card); white-space: nowrap; }
+  nav.toc a:hover { color: var(--accent); border-color: var(--accent); }
+
+  section.theme { padding-top: 64px; }
+  .theme-tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  section.theme > h2 { font-size: 27px; font-weight: 720; letter-spacing: -.015em; margin: 6px 0 8px; }
+  .theme-intro { color: var(--muted); max-width: 66ch; margin: 0 0 8px; font-size: 15.5px; }
+
+  .ledger { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; margin-top: 20px; }
+  .decided { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; font-size: 13.5px; display: flex; gap: 9px; align-items: flex-start; }
+  .decided .tick { flex: 0 0 auto; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--ok-soft); color: var(--ok); font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .decided b { display: block; font-size: 13.5px; }
+  .decided span { color: var(--muted); font-size: 12.5px; }
+
+  article.item { margin-top: 34px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
+  .item-head { padding: 24px 28px 6px; }
+  .item-head h3 { margin: 0 0 8px; font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+  .item-head .from-note { font-size: 13px; color: var(--muted); font-style: italic; margin: 0 0 10px;
+    border-left: 2px solid var(--line); padding-left: 10px; }
+  .item-head p.take { margin: 0 0 8px; font-size: 15px; max-width: 72ch; }
+  .qa { margin: 10px 0 4px; padding: 0; list-style: none; max-width: 72ch; }
+  .qa li { margin: 10px 0; font-size: 14.5px; }
+  .qa .q { font-weight: 650; color: var(--accent); }
+
+  .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px;
+    padding: 22px 28px 26px; align-items: start; }
+  @media (max-width: 720px) { .pair { grid-template-columns: minmax(0, 1fr); } }
+  .frame-col { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .frame-label { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--muted); }
+  .frame-label.proposed { color: var(--accent); }
+  .anno { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11.5px;
+    color: var(--muted); text-align: center; max-width: 290px; line-height: 1.5; }
+  .anno b { color: var(--accent); font-weight: 600; }
+
+  .phone { width: 248px; height: 520px; flex: 0 0 auto; border-radius: 34px; padding: 9px;
+    background: #0d0d10; border: 1px solid #3a3a42; box-shadow: var(--shadow); }
+  .screen { position: relative; width: 100%; height: 100%; border-radius: 26px; overflow: hidden;
+    background: #101014; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+  .phone.lightui { background: #c9c4ba; border-color: #b5b0a6; }
+  .phone.lightui .screen { background: #F4F1EA; }
+
+  .hl { outline: 1.5px dashed var(--accent); outline-offset: 3px; border-radius: 4px; }
+  .hl-note { position: absolute; font-family: ui-monospace, Menlo, monospace; font-size: 7px;
+    color: #fff; background: var(--accent); border-radius: 3px; padding: 1px 5px; z-index: 7; }
+
+  .jhead { padding: 12px 12px 4px; }
+  .jhead .big { font-size: 15px; font-weight: 780; color: #26231F; }
+  .jhead .sub { font-size: 8px; color: #8A857D; margin-top: 2px; }
+  .seg { display: flex; gap: 4px; margin: 8px 12px 2px; }
+  .seg span { font-size: 7.5px; padding: 3px 9px; border-radius: 999px; border: 1px solid #D8D3C9;
+    color: #55504A; background: #fff; font-family: ui-monospace, Menlo, monospace; }
+  .seg span.on { background: #26231F; color: #FAF8F3; border-color: #26231F; }
+  .jrow { display: flex; gap: 8px; align-items: center; padding: 7px 12px; border-bottom: 1px solid #E7E2D8; }
+  .jrow .jthumb { width: 40px; height: 40px; border-radius: 8px;
+    background: linear-gradient(155deg,#cbd6c3,#d9c9a8); flex: 0 0 auto; position: relative; }
+  .jrow .jtt { font-size: 9px; font-weight: 650; color: #26231F; }
+  .jrow .jtm { font-size: 7.5px; color: #8A857D; margin-top: 1px; }
+  .grouphdr { font-family: ui-monospace, Menlo, monospace; font-size: 7px; letter-spacing: .12em;
+    text-transform: uppercase; color: #8A857D; padding: 9px 12px 3px; background: #EFEBE2; }
+  .steplist { padding: 10px 12px; color: #26231F; }
+  .steplist .sh { font-size: 7px; font-family: ui-monospace, Menlo, monospace; letter-spacing: .1em;
+    text-transform: uppercase; color: #8A857D; }
+  .steplist .st { font-size: 9px; line-height: 1.6; margin-top: 6px; padding-left: 14px;
+    position: relative; }
+  .steplist .st::before { content: attr(data-n); position: absolute; left: 0; top: 0;
+    font-family: ui-monospace, Menlo, monospace; font-size: 7px; color: #8A857D; }
+  .steplist .st.done { color: #A8A399; text-decoration: line-through; }
+  .bigstep { padding: 16px 14px; color: #26231F; }
+  .bigstep .cnt { font-family: ui-monospace, Menlo, monospace; font-size: 8px; color: #8A857D;
+    letter-spacing: .1em; }
+  .bigstep .txt { font-size: 15px; line-height: 1.45; font-weight: 600; margin-top: 10px; }
+  .bigstep .ing { margin-top: 14px; border-top: 1px solid #E2DDD3; padding-top: 10px;
+    font-size: 9px; color: #55504A; line-height: 1.8; }
+  .navbar { position: absolute; left: 0; right: 0; bottom: 0; height: 42px; background: #FAF8F3;
+    border-top: 1px solid #E2DDD3; display: flex; align-items: center; justify-content: space-around;
+    font-size: 7.5px; color: #8A857D; font-family: ui-monospace, Menlo, monospace; }
+  .navbar .on { color: #26231F; font-weight: 700; }
+  .btmbar { position: absolute; left: 10px; right: 10px; bottom: 12px; display: flex; gap: 8px; }
+  .btmbar .b { flex: 1; text-align: center; background: #26231F; color: #FAF8F3; border-radius: 9px;
+    padding: 8px 0; font-size: 9.5px; font-weight: 700; }
+  .btmbar .b.ghost { background: #fff; color: #55504A; border: 1px solid #D8D3C9; flex: 0 0 66px; }
+  .keepawake { position: absolute; left: 10px; right: 10px; top: 10px; background: #EFEBE2;
+    border: 1px solid #E2DDD3; border-radius: 8px; padding: 5px 8px; font-size: 7.5px;
+    color: #55504A; font-family: ui-monospace, Menlo, monospace; }
+
+  .fw-scroll { overflow-x: auto; padding: 6px 28px 24px; }
+  table.fw { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13.5px; }
+  table.fw th { text-align: left; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+    font-weight: 600; padding: 8px 14px 8px 0; border-bottom: 1.5px solid var(--line); }
+  table.fw td { padding: 12px 14px 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.fw td b { display: block; }
+  table.fw .cue { font-size: 12px; color: var(--muted); }
+
+  .fb { border-top: 1px dashed var(--line); padding: 18px 28px 24px;
+    background: color-mix(in srgb, var(--accent-soft) 30%, var(--card)); }
+  .fb-label { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .stances { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .stances button { font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--card); color: var(--muted); }
+  .stances button:hover { border-color: var(--accent); color: var(--accent); }
+  .stances button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .fb textarea { width: 100%; min-height: 64px; resize: vertical; font: inherit; font-size: 14px;
+    color: var(--ink); background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 12px; }
+  .fb textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+  .fb textarea::placeholder { color: var(--muted); }
+  .saved-tick { font-size: 11.5px; color: var(--muted); margin-top: 6px; min-height: 16px;
+    font-family: ui-monospace, Menlo, monospace; }
+
+  .exporter { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 100;
+    display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; white-space: nowrap;
+    max-width: calc(100vw - 24px); background: var(--ink); color: var(--paper);
+    border-radius: 999px; padding: 7px 8px 7px 16px; box-shadow: 0 8px 30px rgba(0,0,0,.25); }
+  .exporter .count { font-size: 12.5px; font-weight: 600; }
+  .exporter button { font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; flex: 0 0 auto;
+    background: var(--accent); color: #fff; border: none; border-radius: 999px; padding: 7px 14px; }
+  .exporter button.ghost { background: transparent; color: var(--paper);
+    border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent); font-weight: 600; }
+  .exporter .msg { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--paper); font-size: 12px; border-radius: 8px;
+    padding: 6px 12px; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,.25); }
+  .exporter .msg:empty { display: none; }
+  @media (max-width: 640px) { .exporter .count { display: none; } .exporter { padding-left: 10px; } }
+  @media (max-width: 480px) {
+    .wrap { padding: 0 14px 120px; }
+    .item-head { padding: 18px 16px 6px; }
+    .pair { padding: 16px 14px 20px; gap: 20px; }
+    .fb { padding: 14px 16px 20px; }
+    nav.toc { margin: 34px -14px 0; padding: 10px 14px; }
+    .fw-scroll { padding: 6px 16px 20px; }
+  }
+  .final { margin-top: 72px; padding: 28px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; box-shadow: var(--shadow); }
+  .final h2 { margin: 0 0 8px; font-size: 22px; }
+  .final p { color: var(--muted); font-size: 14.5px; max-width: 64ch; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Mise (fictional demo app) · Feature review · Round 1</div>
+  <h1>Cook mode, and what the recipe list should do while you're standing at the stove</h1>
+  <p class="lede">Three proposals for the next phase, each drawn as the app today next to
+  the app proposed. Pick a stance on each, write whatever you're thinking in the box —
+  it saves as you type, so you can close this and come back. When you're done, hit
+  <b>Save notes for Claude</b> at the bottom and tell Claude "done".</p>
+  <div class="demo-banner"><b>This is a demo page.</b> "Mise" is a made-up recipe app invented
+  to show the shape of a design-review artifact. The stance buttons, the note boxes and the
+  exporter are all live — click around, the page is the point.</div>
+</header>
+
+<nav class="toc">
+  <a href="#guardrails">Guardrails</a>
+  <a href="#e1">E1 · Cook mode</a>
+  <a href="#e2">E2 · List grouping</a>
+  <a href="#order">Order &amp; sizes</a>
+  <a href="#anything">Anything else</a>
+</nav>
+
+<section class="theme" id="guardrails">
+  <div class="theme-tag">The lines this review doesn't cross</div>
+  <h2>Guardrails, stated up front</h2>
+  <p class="theme-intro">From the project's DESIGN.md. If a wireframe below seems to break one
+  of these, that's a bug in the wireframe — flag it in the notes.</p>
+  <div class="ledger">
+    <div class="decided"><div class="tick">✓</div><div><b>Everything works offline</b><span>the kitchen has bad wifi; no screen may block on a fetch</span></div></div>
+    <div class="decided"><div class="tick">✓</div><div><b>No accounts, no sync</b><span>local storage only until v2 — nothing here may assume a server</span></div></div>
+    <div class="decided"><div class="tick">✓</div><div><b>One accent colour</b><span>the ink/paper palette is fixed; new surfaces reuse it</span></div></div>
+    <div class="decided"><div class="tick">✓</div><div><b>Nothing auto-deletes</b><span>a recipe leaves the list only when the user says so</span></div></div>
+  </div>
+</section>
+
+<section class="theme" id="e1">
+  <div class="theme-tag">E1 · Size M · No schema change · ships first</div>
+  <h2>E1 · A cook mode you can read from two feet away</h2>
+  <article class="item">
+    <div class="item-head">
+      <h3>Split the recipe into one step per screen, with the screen kept awake.</h3>
+      <p class="from-note">"I keep losing my place and my hands are covered in flour." — you, last session</p>
+      <p class="take">Recommend it, and recommend it first. Today the whole recipe is one
+      scrolling page at body-text size: finding your place after a scroll means re-reading, and
+      the screen dims mid-simmer. One step per screen at 15pt solves both, and it's additive —
+      the existing recipe view stays exactly as it is for reading on the couch.</p>
+      <ul class="qa">
+        <li><span class="q">Step-per-screen, not a bigger font.</span> Enlarging the existing list
+        would push a four-step recipe to three screens of scrolling. The problem isn't size alone,
+        it's that nothing marks where you are.</li>
+        <li><span class="q">Ingredients repeat on every step.</span> Only the ones that step uses.
+        This is the single thing that stops the back-and-forth to the top of the page.</li>
+        <li><span class="q">Keep-awake is scoped to cook mode.</span> Entering sets it, leaving
+        clears it, and a banner says so — a screen that silently never sleeps is a battery bug
+        the user can't diagnose.</li>
+        <li><span class="q">Deviation flag.</span> DESIGN.md says every screen is reachable from
+        the tab bar. Cook mode isn't — it's modal, entered from a recipe and exited back to it.
+        Flagging it rather than quietly breaking the rule.</li>
+      </ul>
+    </div>
+    <div class="pair">
+      <div class="frame-col">
+        <div class="frame-label">Today — recipe detail, scrolling</div>
+        <div class="phone lightui"><div class="screen">
+          <div class="jhead">
+            <div class="big">Weeknight ragù</div>
+            <div class="sub">45 min · serves 4 · saved 12 Mar</div>
+          </div>
+          <div class="steplist">
+            <div class="sh">Ingredients</div>
+            <div class="st" data-n="">400g tinned tomatoes · 1 onion · 2 cloves garlic
+            · 300g mince · 1 carrot · olive oil · salt</div>
+          </div>
+          <div class="steplist" style="border-top:1px solid #E2DDD3">
+            <div class="sh">Method</div>
+            <div class="st" data-n="1.">Dice the onion and carrot fine. Warm oil in a wide pan over medium heat.</div>
+            <div class="st" data-n="2.">Soften the onion and carrot 8 min until translucent, not coloured.</div>
+            <div class="st" data-n="3.">Add garlic, cook 1 min, then the mince. Break it up and brown it.</div>
+            <div class="st" data-n="4.">Tomatoes in, half a tin of water, simmer 30 min uncovered.</div>
+            <div class="st" data-n="5.">Season, and check again just before you serve it.</div>
+          </div>
+          <div class="navbar"><span class="on">Recipes</span><span>Shopping</span><span>Settings</span></div>
+        </div></div>
+        <div class="anno">Five steps at 9pt, no marker for where you are, and the screen
+        dims after 30s.</div>
+      </div>
+      <div class="frame-col">
+        <div class="frame-label proposed">Proposed — cook mode, step 3 of 5</div>
+        <div class="phone lightui"><div class="screen">
+          <div class="keepawake hl">Screen stays awake while cook mode is open</div>
+          <div class="bigstep" style="margin-top:26px">
+            <div class="cnt">STEP 3 OF 5</div>
+            <div class="txt hl">Add garlic, cook 1 min, then the mince. Break it up and brown it.</div>
+            <div class="hl-note" style="right:14px; top:150px">only this step's items</div>
+            <div class="ing">2 cloves garlic, sliced<br>300g mince<br>the softened onion &amp; carrot</div>
+          </div>
+          <div class="btmbar">
+            <div class="b ghost">Back</div>
+            <div class="b">Next step</div>
+          </div>
+        </div></div>
+        <div class="anno"><b>one step, one screen</b> — 15pt, the ingredients for
+        <i>this</i> step only, and an explicit awake banner.</div>
+      </div>
+    </div>
+    <div class="fb" data-item="E1 Cook mode">
+      <div class="fb-label">Your call</div>
+      <div class="stances"></div>
+      <textarea placeholder="Notes on E1… Two things I'd most like your read on: (1) is a modal screen with no tab bar acceptable here, or should cook mode be a fourth tab? (2) should Next advance automatically on a timer step, or always by tap?"></textarea>
+      <div class="saved-tick"></div>
+    </div>
+  </article>
+</section>
+
+<section class="theme" id="e2">
+  <div class="theme-tag">E2 · Size S · No schema change · independent of E1</div>
+  <h2>E2 · Stop sorting the list by the day you saved it</h2>
+  <article class="item">
+    <div class="item-head">
+      <h3>Group the recipe list by course, keep newest-first inside each group.</h3>
+      <p class="from-note">"By the time I have 40 of these I'll never find the soup." — you, two sessions ago</p>
+      <p class="take">Recommend it, with one reservation. Save-date ordering is only useful for
+      the handful you added this week; past about twenty recipes it becomes a scroll hunt.
+      Course grouping matches how you actually decide ("what am I making for dinner"). The
+      reservation: it needs a course on every recipe, and the eleven already saved don't have one.</p>
+      <ul class="qa">
+        <li><span class="q">Course, not cuisine or tag.</span> Cuisine splits too fine on a small
+        library — you'd get seven groups of one. Course gives four or five real groups.</li>
+        <li><span class="q">Recently saved stays reachable.</span> It becomes a segmented filter
+        at the top rather than the default order, so nothing that works today gets worse.</li>
+        <li><span class="q">The eleven existing recipes need backfilling.</span> Proposal: default
+        them all to "Mains" and let you re-file from the row. No migration, no schema change —
+        the field already exists and is nullable.</li>
+        <li><span class="q">Open question, genuinely.</span> Should an unfiled recipe get its own
+        "Unsorted" group at the top, or silently sit in Mains? The wireframe shows Unsorted.</li>
+      </ul>
+    </div>
+    <div class="pair">
+      <div class="frame-col">
+        <div class="frame-label">Today — flat list, newest first</div>
+        <div class="phone lightui"><div class="screen">
+          <div class="jhead">
+            <div class="big">Recipes</div>
+            <div class="sub">11 saved</div>
+          </div>
+          <div class="jrow"><div class="jthumb"></div><div><div class="jtt">Weeknight ragù</div><div class="jtm">saved 12 Mar · 45 min</div></div></div>
+          <div class="jrow"><div class="jthumb"></div><div><div class="jtt">Leek and potato soup</div><div class="jtm">saved 9 Mar · 30 min</div></div></div>
+          <div class="jrow"><div class="jthumb"></div><div><div class="jtt">Buttermilk pancakes</div><div class="jtm">saved 2 Mar · 20 min</div></div></div>
+          <div class="jrow"><div class="jthumb"></div><div><div class="jtt">Roast chicken, one pan</div><div class="jtm">saved 27 Feb · 1 hr 20</div></div></div>
+          <div class="jrow"><div class="jthumb"></div><div><div class="jtt">Olive oil cake</div><div class="jtm">saved 21 Feb · 55 min</div></div></div>
+          <div class="jrow"><div class="jthumb"></div><div><div class="jtt">Chickpea stew</div><div class="jtm">saved 14 Feb · 40 min</div></div></div>
+          <div class="navbar"><span class="on">Recipes</span><span>Shopping</span><span>Settings</span></div>
+        </div></div>
+        <div class="anno">Soup and cake and dinner interleaved by date. Fine at 11 recipes,
+        unusable at 40.</div>
+      </div>
+      <div class="frame-col">
+        <div class="frame-label proposed">Proposed — grouped by course</div>
+        <div class="phone lightui"><div class="screen">
+          <div class="jhead">
+            <div class="big">Recipes</div>
+            <div class="sub">11 saved · 4 groups</div>
+          </div>
+          <div class="seg hl"><span class="on">By course</span><span>Recently saved</span><span>Quick</span></div>
+          <div class="hl-note" style="right:12px; top:78px">old order kept as a filter</div>
+          <div class="grouphdr" style="margin-top:8px">Unsorted · 2</div>
+          <div class="jrow"><div class="jthumb"></div><div><div class="jtt">Chickpea stew</div><div class="jtm">tap to file · 40 min</div></div></div>
+          <div class="grouphdr">Mains · 5</div>
+          <div class="jrow"><div class="jthumb"></div><div><div class="jtt">Weeknight ragù</div><div class="jtm">45 min</div></div></div>
+          <div class="jrow"><div class="jthumb"></div><div><div class="jtt">Roast chicken, one pan</div><div class="jtm">1 hr 20</div></div></div>
+          <div class="grouphdr">Soups · 2</div>
+          <div class="jrow"><div class="jthumb"></div><div><div class="jtt">Leek and potato soup</div><div class="jtm">30 min</div></div></div>
+          <div class="navbar"><span class="on">Recipes</span><span>Shopping</span><span>Settings</span></div>
+        </div></div>
+        <div class="anno"><b>four groups, not forty rows</b> — with Unsorted surfaced at
+        the top so backfilling is visible work, not a hidden default.</div>
+      </div>
+    </div>
+    <div class="fb" data-item="E2 List grouping">
+      <div class="fb-label">Your call</div>
+      <div class="stances"></div>
+      <textarea placeholder="Notes on E2… The one I'd most like answered: Unsorted as its own group at the top, or default everything to Mains and never mention it?"></textarea>
+      <div class="saved-tick"></div>
+    </div>
+  </article>
+</section>
+
+<section class="theme" id="order">
+  <div class="theme-tag">How these want to be built</div>
+  <h2>Order &amp; sizes</h2>
+  <p class="theme-intro">Sections above are in discussion order. This is the order I'd actually
+  build them in, and why.</p>
+  <article class="item">
+    <div class="fw-scroll">
+      <table class="fw">
+        <thead><tr><th>Order</th><th>Item</th><th>Size</th><th>Why here</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><b>E1 · Cook mode</b><span class="cue">modal step-per-screen view</span></td>
+            <td>M</td>
+            <td>The only one that fixes something painful today. Additive and reversible —
+            if it's wrong, deleting it leaves the app exactly as it is now.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><b>E2 · Course grouping</b><span class="cue">list grouping + backfill</span></td>
+            <td>S</td>
+            <td>Cheap, but it changes the first screen you see, so it goes second — after
+            cook mode has proved the review's read on the kitchen is right.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><b>Held · Shopping list from a recipe</b><span class="cue">not reviewed here</span></td>
+            <td>L</td>
+            <td>Deliberately out of scope for this round. It touches the Shopping tab's data
+            model and deserves its own review rather than a paragraph in this one.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="fb" data-item="Build order">
+      <div class="fb-label">Your call on the order</div>
+      <div class="stances"></div>
+      <textarea placeholder="Wrong order? Want E2 first because it's small?"></textarea>
+      <div class="saved-tick"></div>
+    </div>
+  </article>
+</section>
+
+<section class="theme" id="anything">
+  <div class="final">
+    <h2>Anything else?</h2>
+    <div class="fb" data-item="General / anything else" style="border-top: none; padding: 0; background: transparent;">
+      <textarea placeholder="Anything missing, off-brand, or worth drawing differently…"></textarea>
+      <div class="saved-tick"></div>
+    </div>
+    <p style="margin-top:18px;"><b style="color:var(--ink);">When you're done:</b> hit
+    <b style="color:var(--accent);">Save notes for Claude</b> below, accept the download,
+    then tell Claude "done" in the chat. Round 2 opens with everything you marked
+    <i>Yes</i> banked in a Decided ledger, and a reworked section for everything you
+    marked <i>Discuss more</i>.</p>
+  </div>
+</section>
+</div>
+
+<div class="exporter">
+  <span class="count" id="noteCount">0 notes</span>
+  <span class="msg" id="exportMsg"></span>
+  <button class="ghost" id="copyBtn">Copy</button>
+  <button id="saveBtn">Save notes for Claude</button>
+</div>
+
+<script>
+(function () {
+  var STORE = "mise-cookmode-review-demo-v1";
+  var EXPORT_FILENAME = "mise-review-notes-r1.md";
+  var EXPORT_HEADING = "# Mise · cook mode review — round 1 notes";
+  var STANCES = ["Yes, do it", "Discuss more", "Not now"];
+
+  function load() { try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; } }
+  function persist(data) { try { localStorage.setItem(STORE, JSON.stringify(data)); } catch (e) {} }
+  var data = load();
+
+  document.querySelectorAll(".fb[data-item]").forEach(function (fb) {
+    var key = fb.getAttribute("data-item");
+    var entry = data[key] || {};
+    var stanceWrap = fb.querySelector(".stances");
+    var ta = fb.querySelector("textarea");
+    var tick = fb.querySelector(".saved-tick");
+
+    if (stanceWrap) {
+      STANCES.forEach(function (s) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = s;
+        if (entry.stance === s) b.classList.add("on");
+        b.addEventListener("click", function () {
+          if (b.classList.contains("on")) { b.classList.remove("on"); entry.stance = null; }
+          else {
+            stanceWrap.querySelectorAll("button").forEach(function (x) { x.classList.remove("on"); });
+            b.classList.add("on"); entry.stance = s;
+          }
+          save();
+        });
+        stanceWrap.appendChild(b);
+      });
+    }
+    if (entry.note) ta.value = entry.note;
+    var t;
+    ta.addEventListener("input", function () {
+      entry.note = ta.value; clearTimeout(t); t = setTimeout(save, 400);
+    });
+    function save() {
+      data[key] = entry; persist(data);
+      tick.textContent = "saved";
+      setTimeout(function () { tick.textContent = ""; }, 1200);
+      updateCount();
+    }
+  });
+
+  var countEl = document.getElementById("noteCount");
+  function updateCount() {
+    var n = 0;
+    document.querySelectorAll(".fb[data-item]").forEach(function (fb) {
+      var e = data[fb.getAttribute("data-item")];
+      if (e && ((e.note && e.note.trim()) || e.stance)) n++;
+    });
+    countEl.textContent = n + (n === 1 ? " note" : " notes");
+  }
+  updateCount();
+
+  function fitPhones() {
+    document.querySelectorAll(".frame-col").forEach(function (col) {
+      var phone = col.querySelector(".phone");
+      if (!phone) return;
+      var avail = col.clientWidth;
+      if (!avail || avail < 80) return;
+      phone.style.zoom = Math.min(1, avail / 250);
+    });
+  }
+  fitPhones();
+  window.addEventListener("resize", fitPhones);
+  window.addEventListener("load", fitPhones);
+  setTimeout(fitPhones, 300);
+
+  function compile() {
+    var lines = [EXPORT_HEADING, ""];
+    document.querySelectorAll(".fb[data-item]").forEach(function (fb) {
+      var key = fb.getAttribute("data-item");
+      var e = data[key] || {};
+      var hasNote = e.note && e.note.trim();
+      if (!hasNote && !e.stance) return;
+      lines.push("## " + key);
+      if (e.stance) lines.push("Stance: " + e.stance);
+      if (hasNote) lines.push(e.note.trim());
+      lines.push("");
+    });
+    if (lines.length <= 2) lines.push("(no notes entered)");
+    return lines.join("\n");
+  }
+
+  var msg = document.getElementById("exportMsg");
+  document.getElementById("saveBtn").addEventListener("click", function () {
+    var text = compile();
+    if (!window.claude || !window.claude.downloads) { msg.textContent = "Saving unavailable here — use Copy instead."; return; }
+    msg.textContent = "";
+    window.claude.downloads.save({ filename: EXPORT_FILENAME, data: text })
+      .then(function () { msg.textContent = "Saved — now tell Claude “done” in the chat."; })
+      .catch(function (err) {
+        if (err && err.code === "declined") { msg.textContent = "Save cancelled."; }
+        else if (err && err.code === "rate_limited") { msg.textContent = "One moment, then try again."; }
+        else { msg.textContent = "Couldn't save — use Copy instead."; }
+      });
+  });
+  document.getElementById("copyBtn").addEventListener("click", function () {
+    var text = compile();
+    function done(ok) { msg.textContent = ok ? "Copied — paste it into the chat." : "Couldn't copy."; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+    } else { done(false); }
+  });
+})();
+</script>
