@@ -22,6 +22,7 @@ you: "let's plan the next phase"
   → round 2: a Decided ledger of everything you said Yes to,
              reworked wireframes for everything you wanted to discuss
   → when it concludes, the decisions get written into the repo's own docs
+  → after it ships, one pass checking the built screen against those decisions
 ```
 
 ## Install
@@ -40,7 +41,7 @@ Project-scoped instead of global: copy it to `.claude/skills/` inside the repo y
 
 | Path | What it is |
 | --- | --- |
-| `skills/design-review/SKILL.md` | The skill. How to research the current state, structure a section, run the feedback loop, and write decisions back into the repo. |
+| `skills/design-review/SKILL.md` | The skill. How to research the current state, structure a section, run the feedback loop, write decisions back into the repo, and check the built screen once it ships. |
 | `skills/design-review/assets/template.html` | The page scaffold — phone-frame CSS, the stance/notes script, the exporter, and a commented example section. |
 | `examples/mise-review-round-1.html` | The example review — [served here](https://jinks-b.github.io/design-review-skill/examples/mise-review-round-1.html) by GitHub Pages. |
 

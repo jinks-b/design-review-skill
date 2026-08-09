@@ -11,7 +11,8 @@ description: >
   file (or says "done") from a previous round. Also use it for round 2+: reworking
   flagged items, answering the user's questions, and moving decided items to a
   ledger. Prefer this over plain-text plans whenever the work being planned has
-  screens the user will look at.
+  screens the user will look at. Also use it after reviewed work ships, to check
+  the built screen against what the review decided.
 ---
 
 # Design review artifacts
@@ -163,6 +164,38 @@ planning decides HOW, never reopens WHAT; new gaps get asked with an explicit
 outlast wireframes as pixels — an agent executes text better than it reads a
 drawing, and earlier rounds' images may sit behind version history where a
 fetch can't reach them.
+
+## After the build: check the built screen against the review
+
+A wireframe can only be wrong in the ways you thought to draw. Once the
+reviewed work ships to a simulator or device, **run one verification pass
+against the running app** — not a new review, a check that the contract was
+kept. Do it while the build session's context is still warm, because the
+cheapest time to fix a broken promise is before the next phase builds on it.
+
+- **Read the screen as text, not as a picture.** An accessibility tree or
+  element dump is cheaper than a screenshot and answers questions a screenshot
+  cannot: whether a control has a label, whether a string is truncated rather
+  than merely small, what the actual hierarchy is. Reserve screenshots for the
+  things only pixels settle — spacing, contrast, whether it *looks* right.
+- **Check the two failure classes wireframes structurally miss.** Accessibility
+  (unlabeled controls, hit targets, focus order) and text that only breaks at
+  the extremes — longest real string, largest Dynamic Type / system font scale,
+  smallest supported screen. A mock is drawn at one size with the copy you
+  chose, so it cannot show either. On iOS, `performAccessibilityAudit()` inside
+  an existing UI test catches most of the first class for one line.
+- **Diff against the decided rules, item by item.** Walk the contract written
+  into the repo and mark each rule kept, missed, or changed-in-the-build. A
+  rule the build quietly dropped is the same failure as a rejection nobody
+  wrote down.
+- **Report misses as facts, not as new proposals.** "E1 said one step per
+  screen with the step's ingredients repeated; the build repeats all
+  ingredients" — then let the user decide whether the build or the contract is
+  wrong. Silently redesigning at this stage reopens a decided WHAT.
+
+If the misses are substantial enough to need stances, they become a short
+review round of their own: same page, same feedback mechanics, sections titled
+after what broke.
 
 ## Publishing checklist
 
